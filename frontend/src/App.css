@@ -1,0 +1,130 @@
+/* --- 1. 全局样式与最终调色板 (全局渐变最终版) --- */
+:root {
+  /* --- 背景色 (现在主要由渐变控制，这些作为 fallback 和元素背景) --- */
+  --bg-sidebar-start: #2A3346; /* 渐变起始色: 深空蓝 */
+  --bg-editor-end: #181A1F;    /* 渐变结束色: 午夜黑 */
+  --bg-tertiary: #313A52;     /* 卡片/悬停背景 */
+  
+  /* --- 文本与高光 --- */
+  --text-primary: #FFFFFF;    
+  --text-secondary: #A9AEBB;  
+  --text-dark: #2C2F36;        
+  --primary-blue: #0A84FF;    
+  --bg-light: #FFFFFF;
+
+  /* --- 边框与阴影 --- */
+  --border-color: #3A3F4C;
+  --border-radius-sm: 6px;    
+  --border-radius-md: 10px;   
+  --card-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+
+  /* --- 字体 --- */
+  --font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+}
+
+html, body, #root {
+  height: 100%; width: 100%; overflow: hidden; margin: 0;
+  font-family: var(--font-family); color: var(--text-primary);
+}
+
+/* --- 2. 主布局 --- */
+.app-container {
+  display: flex;
+  height: 100vh;
+  width: 100vw;
+  /* === 关键：应用横跨整个屏幕的线性渐变 === */
+  background-image: linear-gradient(to right, var(--bg-sidebar-start), var(--bg-editor-end) 60%);
+}
+
+/* --- 3. Sidebar 侧边栏 --- */
+.sidebar {
+  width: 260px;
+  background-color: transparent; /* 关键: 透明背景，透出下方的渐变 */
+  padding: 24px;
+  display: flex;
+  flex-direction: column;
+  flex-shrink: 0;
+  border-right: 1px solid rgba(255, 255, 255, 0.1); /* 使用半透明白色边框，更有质感 */
+}
+/* ... Sidebar 内部所有其他样式保持不变 ... */
+.sidebar-header { display: flex; align-items: center; gap: 10px; margin-bottom: 24px; }
+.sidebar-header h2 { margin: 0; font-size: 20px; font-weight: 600; }
+.new-note-btn { background-image: linear-gradient(135deg, #0A84FF, #646AFF); color: white; border: none; border-radius: var(--border-radius-md); padding: 16px; font-size: 15px; font-weight: 500; cursor: pointer; width: 100%; text-align: center; box-shadow: 0 4px 15px rgba(0, 118, 255, 0.3); transition: all 0.2s ease-in-out; }
+.new-note-btn:hover { transform: translateY(-2px); box-shadow: 0 6px 20px rgba(0, 118, 255, 0.4); }
+.sidebar-nav { display: flex; flex-direction: column; gap: 8px; margin-top: 24px; }
+.nav-btn { background: none; border: none; color: var(--text-secondary); padding: 14px; text-align: left; font-size: 15px; border-radius: var(--border-radius-md); cursor: pointer; transition: background-color 0.2s, color 0.2s; display: flex; align-items: center; gap: 12px; }
+.nav-btn:hover { background-color: var(--bg-tertiary); color: var(--text-primary); }
+.nav-btn.active { background-color: var(--bg-tertiary); color: var(--text-primary); font-weight: 500; }
+.sidebar-footer { margin-top: auto; color: var(--text-secondary); font-size: 12px; padding-left: 8px; }
+
+/* --- 4. NoteList 笔记列表 --- */
+.note-list {
+  width: 340px;
+  background-color: transparent; /* 关键: 透明背景，透出下方的渐变 */
+  display: flex;
+  flex-direction: column;
+  flex-shrink: 0;
+  border-right: 1px solid rgba(255, 255, 255, 0.1);
+}
+/* ... NoteList 内部所有其他样式保持不变 ... */
+.note-list-header { padding: 24px 20px; border-bottom: 1px solid rgba(255, 255, 255, 0.1); flex-shrink: 0; }
+.search-container { position: relative; }
+.search-icon { position: absolute; top: 50%; left: 16px; transform: translateY(-50%); color: var(--text-secondary); }
+.search-input { width: 100%; padding: 16px 20px 16px 44px; background-color: var(--bg-light); color: var(--text-dark); border: none; border-radius: var(--border-radius-md); font-size: 14px; box-sizing: border-box; box-shadow: var(--card-shadow); }
+.search-input:focus { outline: none; }
+.search-input::placeholder { color: var(--text-secondary); }
+.note-list-body { overflow-y: auto; flex-grow: 1; padding: 16px 20px; }
+.note-card { padding: 20px; border-radius: var(--border-radius-md); margin: 0 0 12px 0; border: 1px solid var(--border-color); background-color: var(--bg-tertiary); cursor: pointer; transition: all 0.2s; position: relative; }
+.note-card:hover { border-color: var(--primary-blue); }
+.note-card.active { background-color: var(--bg-tertiary); border: 1px solid var(--primary-blue); box-shadow: 0 0 10px rgba(10, 132, 255, 0.3); }
+.note-card.active .note-card-title, .note-card.active .note-card-excerpt, .note-card.active .tag-pill { color: white; }
+.note-card.active .tag-pill { background-color: rgba(255, 255, 255, 0.2); }
+.note-card-header { display: flex; justify-content: space-between; align-items: baseline; margin-bottom: 8px; }
+.note-card-title { font-weight: 600; margin: 0; }
+.note-card-time { font-size: 12px; color: var(--text-secondary); flex-shrink: 0; margin-left: 12px; }
+.note-card-excerpt { font-size: 13px; color: var(--text-secondary); margin: 8px 0 14px 0; line-height: 1.5; display: -webkit-box; -webkit-line-clamp: 1; line-clamp: 1; -webkit-box-orient: vertical; overflow: hidden; }
+.note-card-tags { display: flex; flex-wrap: wrap; gap: 8px; }
+.tag-pill { font-size: 12px; font-weight: 500; padding: 5px 12px; border-radius: 16px; border: 1px solid; }
+.tag-pill[data-tag-name="灵感"], .tag-pill[data-tag-name="创意"] { border-color: #A7A1FF; color: #A7A1FF; background-color: rgba(167, 161, 255, 0.1); }
+.tag-pill[data-tag-name="设计"], .tag-pill[data-tag-name="系统"] { border-color: #63D9B6; color: #63D9B6; background-color: rgba(99, 217, 182, 0.1); }
+.tag-pill.tag-plus { background-color: var(--bg-primary); border-color: var(--border-color); }
+.note-card-actions { position: absolute; bottom: 12px; right: 16px; display: flex; gap: 8px; background-color: var(--bg-tertiary); padding: 4px; border-radius: var(--border-radius-sm); border: 1px solid var(--border-color); opacity: 0; pointer-events: none; transition: opacity 0.2s ease-in-out; }
+.note-card:hover .note-card-actions, .note-card.active .note-card-actions { opacity: 1; pointer-events: auto; }
+.icon-btn { background: none; border: none; color: var(--text-secondary); cursor: pointer; font-size: 14px; padding: 6px; border-radius: 6px; display: flex; align-items: center; justify-content: center; transition: background-color 0.2s, color 0.2s; }
+.icon-btn:hover { background-color: var(--bg-primary); color: var(--text-primary); }
+.loading-text, .empty-text { text-align: center; color: var(--text-secondary); padding: 20px; }
+
+/* --- 5. NoteEditor 笔记编辑器 --- */
+.note-editor {
+  flex-grow: 1;
+  background-color: transparent; /* 关键: 透明背景，透出下方的渐变 */
+  padding: 24px 32px;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+.editor-wrapper {
+  background-color: var(--bg-tertiary); /* 嵌入式卡片使用一个统一的、稍亮的颜色 */
+  border-radius: var(--border-radius-md);
+  flex-grow: 1;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+/* ... (Editor 内部的所有其他样式保持不变) ... */
+.editor-header { display: flex; justify-content: space-between; align-items: center; padding: 14px 24px; border-bottom: 1px solid var(--border-color); flex-shrink: 0; }
+.editor-status { display: flex; align-items: center; gap: 8px; color: var(--text-secondary); font-size: 14px; }
+.editor-toolbar button { background-color: var(--bg-tertiary); border: 1px solid var(--border-color); color: var(--text-secondary); padding: 8px 16px; cursor: pointer; transition: all 0.2s; }
+.editor-toolbar button:first-child { border-top-left-radius: var(--border-radius-sm); border-bottom-left-radius: var(--border-radius-sm); }
+.editor-toolbar button:last-child { border-top-right-radius: var(--border-radius-sm); border-bottom-right-radius: var(--border-radius-sm); border-left: none; }
+.editor-toolbar button.active { background-color: var(--primary-blue); color: white; border-color: var(--primary-blue); }
+.editor-content-area { padding: 24px 32px; flex-grow: 1; overflow-y: auto; display: flex; flex-direction: column; }
+.editor-content-area::-webkit-scrollbar { display: none; }
+.editor-content-area { -ms-overflow-style: none; scrollbar-width: none; }
+.note-title-input { background: none; border: none; color: var(--text-primary); font-size: 30px; font-weight: 700; outline: none; width: 100%; margin-bottom: 16px; }
+.tag-selector-container { margin-bottom: 24px; }
+.note-content-textarea { background: none; border: none; color: var(--text-primary); font-size: 16px; line-height: 1.7; outline: none; resize: none; width: 100%; flex-grow: 1; font-family: var(--font-family); }
+.markdown-preview { line-height: 1.7; flex-grow: 1; }
+.markdown-preview h1, .markdown-preview h2 { border-bottom: 1px solid var(--border-color); padding-bottom: 8px; }
+.note-editor-empty { color: var(--text-secondary); text-align: center; margin: auto; }
+.editor-footer { display: flex; justify-content: space-between; padding: 12px 24px; border-top: 1px solid var(--border-color); font-size: 12px; color: var(--text-secondary); flex-shrink: 0; }
