@@ -14,6 +14,7 @@ class Note(models.Model):
     tags = models.ManyToManyField(Tag, blank=True, related_name='notes')
     is_favorite = models.BooleanField(default=False)
     is_trashed = models.BooleanField(default=False)
+    
 
     def __str__(self):
         return self.title
